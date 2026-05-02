@@ -16,7 +16,7 @@ Original file is located at
 ### Öğrenci No: 244312014
 ### Öğrenci Ad Soyad: Zeynep Şeker
 
-Veri Kümesi Hakkında
+Veri Kümesi Hakkında:	Wine Classification
 
 * Örnek Sayısı: 178
 * Özellik Sayısı: 13
@@ -150,7 +150,7 @@ plt.savefig('boxplot_wine_features.png')
 plt.show()
 plt.close()
 
-"""Aykırı değerler (outliers), ortalamayı ve varyansı bozar, hata payını arttırır, yanlılık (bias) oluşturur, eğim ve katsayıları değiştirir, bu sebepten önlem alınması veya aykırı değerlere duyarlı analiz yöntemleri kullanılması gerekir. burada yapuılan z-score ve box plot analizlerinden görüldüğü üzere aykırı değerler bulunmaktadır. Aykırı değerler için robust scale ile ölçekleme yapılmasına karar verilmiştir.
+"""Aykırı değerler (outliers), ortalamayı ve varyansı bozar, hata payını arttırır, yanlılık (bias) oluşturur, eğim ve katsayıları değiştirir, bu sebepten önlem alınması veya aykırı değerlere duyarlı analiz yöntemleri kullanılması gerekir. Burada yapuılan z-score ve box plot analizlerinden görüldüğü üzere aykırı değerler bulunmaktadır. Aykırı değerler için robust scale ile ölçekleme yapılmasına karar verilmiştir.
 
 2.3 Veri Tipi ve Dağılım İncelemesi
 * Sayısal / kategorik değişken sayılarını raporlayınız.
@@ -273,33 +273,43 @@ Bu tür güçlü ilişkiler, veri setindeki öznitelikler arasında yüksek bir 
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 # 3.3 Boxplot Analizi
 
+# X ve y değişkenlerini birleştirerek tek bir DataFrame oluşturalım
+# (y değişkeninin sütun adı 'Wine' olduğu varsayılmıştır)
+df_combined = pd.concat([X, y], axis=1)
+
 # Grafik alanı boyutlarını ve alt grafik düzenini belirle
 # (Sütun sayınıza göre 4x4 veya 5x3 gibi bir düzen seçebilirsiniz)
+# X'in 13 sütunu olduğu için 4x4 uygun
 plt.figure(figsize=(18, 15))
 
+# X'teki her bir sütun için (yani her bir özellik için) boxplot çizelim
+# Bu sefer boxplot'ları 'Wine' değişkenine göre gruplayarak çiziyoruz
 for i, col in enumerate(X.columns):
     plt.subplot(4, 4, i + 1) # 4 satır, 4 sütunlu düzen
-    sns.boxplot(y=X[col], color='skyblue', linewidth=1.5)
-    plt.title(f'{col}', fontsize=12)
-    plt.ylabel('') # Y ekseni etiketini temizle (başlıkta var)
+    sns.boxplot(x='Wine', y=col, data=df_combined, palette='viridis', hue='Wine', legend=False, linewidth=1.5)
+    plt.title(f'{col} (Wine Sınıfına Göre)', fontsize=12)
+    plt.xlabel('Wine Sınıfı') # X ekseni etiketini Wine Sınıfı olarak belirle
+    plt.ylabel(f'{col} Değeri') # Y ekseni etiketini ilgili özellik olarak belirle
 
 # Yerleşimi otomatik ayarla
 plt.tight_layout()
 
 # Grafiği kaydet ve göster
-plt.savefig('wine_boxplot_detailed.png')
+plt.savefig('wine_boxplot_detailed_by_wine_class.png')
 plt.show()
 
-"""4. Veri Setinin Bölünmesi
+"""Box plot analizinde medyan yani ortlama değerleri birrinden farklı olan öznitelikler sınıflandırma konusunda başarılı olacak özniteliklerin bilgisini bize verir. Burada phenols ve flavanoids öznitelikleri ayrım yapmada göze çarpmaktadır.
+
+4. Veri Setinin Bölünmesi
 Veriyi aşağıdaki oranlarda bölünüz:
 *	%70 Training
 *	%10 Validation
 *	%20 Test
 Not: Validation için ikinci bir train_test_split yapılabilir.
-
 """
 
 from sklearn.model_selection import train_test_split
